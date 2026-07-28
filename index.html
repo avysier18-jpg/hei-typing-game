@@ -38,7 +38,7 @@
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 40px 20px 64px;
+    padding: 24px 20px 40px;
   }
 
   .stage{ width: 100%; max-width: 760px; }
@@ -48,10 +48,10 @@
   .screen.active{ display: block; }
 
   /* ---- masthead ---- */
-  .mast{ text-align: center; margin-bottom: 30px; }
+  .mast{ text-align: center; margin-bottom: 18px; }
   .title{
     font-family: var(--font-display);
-    font-size: clamp(52px, 12vw, 104px);
+    font-size: clamp(40px, 8.4vw, 78px);
     line-height: .82;
     letter-spacing: 1px;
     margin: 0;
@@ -62,7 +62,7 @@
   .title .race{ color: var(--flash); }
   .speedbars{
     display: flex; gap: 6px; justify-content: center;
-    margin: 14px 0 12px;
+    margin: 10px 0 8px;
   }
   .speedbars i{
     display:block; height: 5px; border-radius: 3px;
@@ -80,9 +80,9 @@
     background: var(--track-2);
     border: 1px solid var(--line);
     border-radius: 18px;
-    padding: 28px;
+    padding: 22px;
   }
-  .field{ margin-bottom: 22px; }
+  .field{ margin-bottom: 16px; }
   .field:last-of-type{ margin-bottom: 0; }
   label.lab{
     display:block;
@@ -154,7 +154,7 @@
     border-left: 3px solid var(--boost);
     border-radius: 6px;
     padding: 11px 14px;
-    margin: 22px 0 4px;
+    margin: 15px 0 4px;
   }
   .howto b{ color: var(--ink); font-weight: 700; }
 
@@ -165,14 +165,14 @@
 
   .btn-go{
     width: 100%;
-    margin-top: 22px;
+    margin-top: 16px;
     background: var(--flash);
     color: #2a0f08;
     border: none;
     border-radius: 12px;
     font-family: var(--font-ui);
-    font-weight: 700; font-size: 19px; letter-spacing: .4px;
-    padding: 16px;
+    font-weight: 700; font-size: 18px; letter-spacing: .4px;
+    padding: 14px;
     cursor: pointer;
     transition: transform .05s, filter .15s;
   }
@@ -319,16 +319,16 @@
   .result-head{
     text-align: center;
     font-family: var(--font-display);
-    font-size: clamp(40px, 9vw, 74px);
+    font-size: clamp(30px, 6.2vw, 54px);
     letter-spacing: 1px;
     transform: skewX(-7deg);
-    margin: 6px 0 24px;
+    margin: 2px 0 14px;
   }
   .scorecard{
     background: var(--track-2);
     border: 1px solid var(--line);
     border-radius: 18px;
-    padding: 30px;
+    padding: 22px;
     text-align: center;
   }
   .scorecard .rname{
@@ -337,19 +337,19 @@
   }
   .bignum{
     font-family: var(--font-display);
-    font-size: clamp(84px, 20vw, 150px);
+    font-size: clamp(56px, 12vw, 96px);
     line-height: .85; color: var(--boost);
   }
   .bignum .u{
-    font-family: var(--font-ui); font-weight: 700; font-size: 22px;
+    font-family: var(--font-ui); font-weight: 700; font-size: 18px;
     color: var(--muted); letter-spacing: 2px; margin-left: 8px;
     vertical-align: super;
   }
   .subline{
-    display: flex; gap: 26px; justify-content: center; flex-wrap: wrap;
-    margin: 20px 0 4px; color: var(--ink);
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    margin: 14px 0 4px; color: var(--ink);
   }
-  .subline .b{ font-family: var(--font-display); font-size: 26px; line-height: 1; }
+  .subline .b{ font-family: var(--font-display); font-size: 22px; line-height: 1; }
   .subline .b small{
     display:block; font-family: var(--font-ui); font-weight: 600; font-size: 11px;
     letter-spacing: 1.3px; color: var(--muted); text-transform: uppercase; margin-top: 5px;
@@ -357,31 +357,31 @@
   #scoreVal{ color: var(--gold); }
   #bestVal{ color: var(--flash); }
   .best-msg{
-    color: var(--gold); font-weight: 700; font-size: 16px;
-    margin: 16px 0 0; min-height: 20px;
+    color: var(--gold); font-weight: 700; font-size: 15px;
+    margin: 12px 0 0; min-height: 18px;
   }
   .msg{
-    margin: 24px auto 0; max-width: 460px;
-    font-size: 16px; line-height: 1.5; color: var(--ink);
+    margin: 14px auto 0; max-width: 460px;
+    font-size: 15px; line-height: 1.45; color: var(--ink);
   }
-  .tip{ color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .tip{ color: var(--muted); font-size: 13.5px; margin-top: 7px; }
   .share{
-    margin: 22px auto 0; max-width: 480px;
+    margin: 14px auto 0; max-width: 480px;
     background: rgba(255,194,75,.08);
     border: 1px solid rgba(255,194,75,.3);
     border-radius: 10px;
-    padding: 13px 16px;
-    font-size: 14.5px; line-height: 1.5; color: var(--ink);
+    padding: 11px 14px;
+    font-size: 14px; line-height: 1.45; color: var(--ink);
   }
   .share code{
     font-family: var(--font-mono); font-weight: 700; letter-spacing: 3px;
     color: var(--gold); font-size: 16px;
   }
-  .again{ display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .again{ display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
   .again button{
     flex: 1; min-width: 150px;
-    border-radius: 12px; padding: 15px;
-    font-family: var(--font-ui); font-weight: 700; font-size: 16px;
+    border-radius: 12px; padding: 13px;
+    font-family: var(--font-ui); font-weight: 700; font-size: 15px;
     cursor: pointer; transition: transform .05s, filter .15s, border-color .15s;
   }
   .again .primary{ background: var(--flash); color: #2a0f08; border: none; }
@@ -392,21 +392,30 @@
 
   /* ---- results header checkered flag (replaces 🏁) ---- */
   .rh-flag{
-    width: 34px; height: 31px; display: inline-block;
-    vertical-align: middle; margin-right: 8px;
+    width: 26px; height: 24px; display: inline-block;
+    vertical-align: middle; margin-right: 6px;
     transform: skewX(7deg);   /* counter the header's skew so the flag reads straight */
   }
   .rh-flag svg{ width: 100%; height: 100%; display: block; }
+
+  /* results: stack on mobile, two columns (stats | card) on wider screens */
+  .results-grid{ display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 760px){
+    .results-grid{
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 26px; align-items: center;
+    }
+  }
 
   /* ============================================================
      TYPIST CARD — 100% original collectible-style card, all CSS/SVG.
      Not based on any existing product's frame, names, or art.
      ============================================================ */
-  .tcard-wrap{ display: flex; justify-content: center; margin: 28px 0 6px; }
+  .tcard-wrap{ display: flex; justify-content: center; margin: 0; }
 
   .tcard{
     position: relative;
-    width: min(300px, 82vw);
+    width: min(248px, 80vw);
     aspect-ratio: 300 / 440;
     border-radius: 18px;
     padding: 9px;                 /* this padding is the metallic frame */
@@ -447,12 +456,12 @@
   .tcard-name{
     flex: 1 1 auto; min-width: 0;
     font-family: var(--font-display);
-    font-size: clamp(17px, 5.6vw, 22px);
+    font-size: clamp(16px, 5.2vw, 20px);
     letter-spacing: .6px; text-transform: uppercase;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     color: var(--ink);
   }
-  .tcard-badge{ flex: 0 0 auto; width: 30px; height: 30px; }
+  .tcard-badge{ flex: 0 0 auto; width: 27px; height: 27px; }
   .tcard-badge svg{ width: 100%; height: 100%; display: block; }
 
   /* art window */
@@ -482,13 +491,13 @@
     background: rgba(255,255,255,.05);
   }
   .tclabel{ font-weight: 800; font-size: 11px; letter-spacing: 1.6px; color: var(--muted); }
-  .tcnum{ font-family: var(--font-display); font-size: clamp(20px, 6vw, 26px); line-height: 1; }
+  .tcnum{ font-family: var(--font-display); font-size: clamp(19px, 5.6vw, 23px); line-height: 1; }
   .tcstat.atk .tcnum{ color: var(--flash); }
   .tcstat.def .tcnum{ color: var(--boost); }
 
   /* star rank */
   .tcard-stars{ flex: 0 0 auto; display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
-  .tcstar{ width: 20px; height: 20px; display: block; }
+  .tcstar{ width: 18px; height: 18px; display: block; }
 
   /* flavor box */
   .tcard-flavor{
@@ -624,6 +633,8 @@
   <section class="screen" id="results">
     <div class="result-head"><span class="rh-flag" aria-hidden="true"><svg viewBox="0 0 44 40"><defs><pattern id="rhCheck" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#f4f1ff"/><rect width="5" height="5" fill="#2a2350"/><rect x="5" y="5" width="5" height="5" fill="#2a2350"/></pattern></defs><rect x="8" y="5" width="2.6" height="31" rx="1.3" fill="#b7b0e0"/><rect x="11.5" y="6.5" width="25" height="17" rx="2" fill="url(#rhCheck)" stroke="rgba(0,0,0,.35)" stroke-width="1"/></svg></span>Finish</div>
     <div class="scorecard">
+      <div class="results-grid">
+        <div class="results-main">
       <div class="rname" id="resName">You</div>
       <div class="bignum"><span id="wpmVal">0</span><span class="u">WPM</span></div>
       <div class="subline">
@@ -636,6 +647,7 @@
       <p class="msg" id="resMsg"></p>
       <p class="tip" id="resTip"></p>
       <div class="share" id="shareBox"></div>
+        </div><!-- /results-main -->
 
       <!-- Typist Card: original collectible-style card, drawn entirely in CSS/SVG -->
       <div class="tcard-wrap">
@@ -716,6 +728,7 @@
           </div>
         </div>
       </div>
+      </div><!-- /results-grid -->
 
       <div class="again">
         <button type="button" class="primary" id="rematchBtn">Rematch &mdash; same words</button>
