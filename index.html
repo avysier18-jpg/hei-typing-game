@@ -256,6 +256,9 @@
     padding: 24px 26px;
     word-spacing: 2px;
     user-select: none;
+    max-width: 100%;
+    white-space: pre-wrap;   /* wrap at spaces, but keep each space's width (caret stays visible) */
+    overflow-wrap: normal;   /* break only between words, never inside a word */
   }
   .ch{ color: var(--muted); }
   .ch.ok{ color: var(--boost); }
@@ -670,7 +673,7 @@ function renderWords(){
     if(i < state.cursor){ cls += state.results[i] ? " ok" : " bad"; }
     else if(i === state.cursor){ cls += " cur"; }
     const c = t[i];
-    const disp = c === " " ? "&nbsp;" : escapeHtml(c);
+    const disp = escapeHtml(c);   // normal (breakable) space between words — pre-wrap keeps it visible
     html += '<span class="'+cls+'">'+disp+'</span>';
   }
   wordsEl.innerHTML = html;
