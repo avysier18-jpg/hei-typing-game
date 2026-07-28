@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Key Race</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --track:   #171233;  /* deep indigo night - page bg */
+    --track-2: #211a46;  /* panel bg */
+    --track-3: #2c2456;  /* input / raised bg */
+    --line:    #3b3470;  /* borders, lane dividers */
+    --ink:     #f4f1ff;  /* primary text */
+    --muted:   #9a91cf;  /* secondary / untyped text */
+    --flash:   #ff6b4a;  /* coral - primary accent, caret, buttons */
+    --boost:   #2de1d0;  /* teal - correct letters, "go" */
+    --warn:    #ff3b5c;  /* red - wrong letters, errors */
+    --gold:    #ffc24b;  /* warm gold - score / winner */
+    --font-display: 'Anton', 'Arial Narrow', system-ui, sans-serif;
+    --font-ui: 'Space Grotesk', system-ui, -apple-system, Segoe UI, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{ margin:0; padding:0; }
+
+  body{
+    min-height: 100vh;
+    background:
+      radial-gradient(1100px 520px at 50% -8%, #2a2158 0%, rgba(42,33,88,0) 60%),
+      var(--track);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px 64px;
+  }
+
+  .stage{ width: 100%; max-width: 760px; }
+
+  /* ---- screens ---- */
+  .screen{ display: none; }
+  .screen.active{ display: block; }
+
+  /* ---- masthead ---- */
+  .mast{ text-align: center; margin-bottom: 30px; }
+  .title{
+    font-family: var(--font-display);
+    font-size: clamp(52px, 12vw, 104px);
+    line-height: .82;
+    letter-spacing: 1px;
+    margin: 0;
+    transform: skewX(-7deg);
+    text-transform: uppercase;
+  }
+  .title .k{ color: var(--ink); }
+  .title .race{ color: var(--flash); }
+  .speedbars{
+    display: flex; gap: 6px; justify-content: center;
+    margin: 14px 0 12px;
+  }
+  .speedbars i{
+    display:block; height: 5px; border-radius: 3px;
+    transform: skewX(-24deg);
+  }
+  .speedbars i:nth-child(1){ width: 46px; background: var(--flash); }
+  .speedbars i:nth-child(2){ width: 30px; background: var(--boost); }
+  .speedbars i:nth-child(3){ width: 16px; background: var(--gold); }
+  .tagline{
+    color: var(--muted); font-size: 15px; letter-spacing: .3px; margin: 0;
+  }
+
+  /* ---- setup card ---- */
+  .card{
+    background: var(--track-2);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px;
+  }
+  .field{ margin-bottom: 22px; }
+  .field:last-of-type{ margin-bottom: 0; }
+  label.lab{
+    display:block;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.4px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+  }
+  input[type="text"]{
+    width: 100%;
+    background: var(--track-3);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 18px;
+    padding: 13px 15px;
+  }
+  input[type="text"]::placeholder{ color: #6f68a4; }
+  input:focus, button:focus-visible, .radio input:focus-visible + span{
+    outline: 3px solid var(--boost);
+    outline-offset: 2px;
+  }
+  #codeInput{
+    font-family: var(--font-mono);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  .code-row{ display: flex; gap: 10px; }
+  .code-row input{ flex: 1; }
+  .dice{
+    flex: 0 0 auto;
+    background: var(--track-3);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 11px;
+    padding: 0 16px;
+    font-family: var(--font-ui);
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 7px;
+    transition: border-color .15s, transform .05s;
+  }
+  .dice:hover{ border-color: var(--flash); }
+  .dice:active{ transform: translateY(1px); }
+
+  .speeds{ display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio{ flex: 1; min-width: 90px; cursor: pointer; }
+  .radio input{ position: absolute; opacity: 0; width:0; height:0; }
+  .radio span{
+    display: block; text-align: center;
+    background: var(--track-3);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 11px 8px;
+    font-weight: 700; font-size: 15px; color: var(--muted);
+    transition: all .15s;
+  }
+  .radio input:checked + span{
+    color: var(--track);
+    background: var(--boost);
+    border-color: var(--boost);
+  }
+
+  .howto{
+    color: var(--muted); font-size: 13.5px; line-height: 1.5;
+    background: rgba(45,225,208,.06);
+    border-left: 3px solid var(--boost);
+    border-radius: 6px;
+    padding: 11px 14px;
+    margin: 22px 0 4px;
+  }
+  .howto b{ color: var(--ink); font-weight: 700; }
+
+  .err{
+    color: var(--warn); font-size: 13.5px; font-weight: 600;
+    margin: 12px 0 0; min-height: 18px;
+  }
+
+  .btn-go{
+    width: 100%;
+    margin-top: 22px;
+    background: var(--flash);
+    color: #2a0f08;
+    border: none;
+    border-radius: 12px;
+    font-family: var(--font-ui);
+    font-weight: 700; font-size: 19px; letter-spacing: .4px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform .05s, filter .15s;
+  }
+  .btn-go:hover{ filter: brightness(1.06); }
+  .btn-go:active{ transform: translateY(1px); }
+
+  /* ---- race screen ---- */
+  .statbar{
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .who{ font-weight: 700; font-size: 17px; }
+  .who .code-tag{
+    color: var(--muted); font-family: var(--font-mono);
+    font-size: 13px; letter-spacing: 2px; margin-left: 8px;
+  }
+  .live{ display: flex; gap: 22px; }
+  .live .val{ font-family: var(--font-display); font-size: 30px; line-height: 1; }
+  .live .val small{
+    display: block; font-family: var(--font-ui); font-weight: 600;
+    font-size: 11px; letter-spacing: 1.3px; color: var(--muted);
+    text-transform: uppercase; margin-top: 4px;
+  }
+  #liveWpm{ color: var(--boost); }
+  #liveTime{ color: var(--ink); }
+
+  /* signature: the race lane */
+  .lane{
+    position: relative;
+    height: 56px;
+    background: linear-gradient(var(--track-3), var(--track-3));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 26px;
+    overflow: hidden;
+  }
+  .lane .mid{
+    position:absolute; left: 14px; right: 46px; top: 50%;
+    height: 0; transform: translateY(-50%);
+    border-top: 2px dashed #4a4382;
+  }
+  .lane .finish{
+    position: absolute; right: 0; top: 0; bottom: 0; width: 30px;
+    background-image:
+      linear-gradient(45deg, #e7e2ff 25%, transparent 25%, transparent 75%, #e7e2ff 75%),
+      linear-gradient(45deg, #e7e2ff 25%, transparent 25%, transparent 75%, #e7e2ff 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 6px 6px;
+    background-color: #322a5f;
+    opacity: .55;
+  }
+  .racer, .pacer{
+    position: absolute; top: 50%; transform: translate(-50%,-50%);
+    transition: left .18s linear;
+  }
+  .racer{ z-index: 3; }
+  .racer .body{
+    width: 0; height: 0;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    border-left: 20px solid var(--flash);
+    filter: drop-shadow(0 0 8px rgba(255,107,74,.6));
+  }
+  .pacer{ z-index: 2; }
+  .pacer .body{
+    width: 0; height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 15px solid #6d66a8;
+    opacity: .8;
+  }
+
+  .words{
+    font-family: var(--font-mono);
+    font-size: clamp(22px, 4.6vw, 30px);
+    line-height: 1.7;
+    letter-spacing: .5px;
+    background: var(--track-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px 26px;
+    word-spacing: 2px;
+    user-select: none;
+  }
+  .ch{ color: var(--muted); }
+  .ch.ok{ color: var(--boost); }
+  .ch.bad{ color: var(--warn); background: rgba(255,59,92,.18); border-radius: 3px; }
+  .ch.cur{ position: relative; color: var(--ink); }
+  .ch.cur::before{
+    content: ""; position: absolute; left: -2px; top: 8%; bottom: 8%;
+    width: 2px; background: var(--flash);
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity: 0; } }
+
+  .race-foot{
+    display: flex; justify-content: space-between;
+    color: var(--muted); font-size: 14px; font-weight: 600;
+    margin-top: 16px;
+  }
+  .race-foot .hint{ font-weight: 400; }
+
+  /* countdown overlay */
+  .count{
+    position: fixed; inset: 0;
+    background: rgba(23,18,51,.92);
+    display: none; align-items: center; justify-content: center;
+    z-index: 50;
+  }
+  .count.show{ display: flex; }
+  .count .n{
+    font-family: var(--font-display);
+    font-size: clamp(90px, 26vw, 220px);
+    color: var(--flash);
+    transform: skewX(-7deg);
+    animation: pop .7s ease-out;
+  }
+  @keyframes pop{ from{ transform: skewX(-7deg) scale(.4); opacity: 0; } }
+
+  /* ---- results ---- */
+  .result-head{
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: clamp(40px, 9vw, 74px);
+    letter-spacing: 1px;
+    transform: skewX(-7deg);
+    margin: 6px 0 24px;
+  }
+  .scorecard{
+    background: var(--track-2);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 30px;
+    text-align: center;
+  }
+  .scorecard .rname{
+    font-size: 15px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+  }
+  .bignum{
+    font-family: var(--font-display);
+    font-size: clamp(84px, 20vw, 150px);
+    line-height: .85; color: var(--boost);
+  }
+  .bignum .u{
+    font-family: var(--font-ui); font-weight: 700; font-size: 22px;
+    color: var(--muted); letter-spacing: 2px; margin-left: 8px;
+    vertical-align: super;
+  }
+  .subline{
+    display: flex; gap: 26px; justify-content: center; flex-wrap: wrap;
+    margin: 20px 0 4px; color: var(--ink);
+  }
+  .subline .b{ font-family: var(--font-display); font-size: 26px; line-height: 1; }
+  .subline .b small{
+    display:block; font-family: var(--font-ui); font-weight: 600; font-size: 11px;
+    letter-spacing: 1.3px; color: var(--muted); text-transform: uppercase; margin-top: 5px;
+  }
+  #scoreVal{ color: var(--gold); }
+  .msg{
+    margin: 24px auto 0; max-width: 460px;
+    font-size: 16px; line-height: 1.5; color: var(--ink);
+  }
+  .tip{ color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .share{
+    margin: 22px auto 0; max-width: 480px;
+    background: rgba(255,194,75,.08);
+    border: 1px solid rgba(255,194,75,.3);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 14.5px; line-height: 1.5; color: var(--ink);
+  }
+  .share code{
+    font-family: var(--font-mono); font-weight: 700; letter-spacing: 3px;
+    color: var(--gold); font-size: 16px;
+  }
+  .again{ display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .again button{
+    flex: 1; min-width: 150px;
+    border-radius: 12px; padding: 15px;
+    font-family: var(--font-ui); font-weight: 700; font-size: 16px;
+    cursor: pointer; transition: transform .05s, filter .15s, border-color .15s;
+  }
+  .again .primary{ background: var(--flash); color: #2a0f08; border: none; }
+  .again .primary:hover{ filter: brightness(1.06); }
+  .again .ghost{ background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .again .ghost:hover{ border-color: var(--boost); }
+  .again button:active{ transform: translateY(1px); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- =================== SETUP =================== -->
+  <section class="screen active" id="setup">
+    <div class="mast">
+      <h1 class="title"><span class="k">Key</span> <span class="race">Race</span></h1>
+      <div class="speedbars" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p class="tagline">Same words, two keyboards. Fastest clean typist wins.</p>
+    </div>
+
+    <div class="card">
+      <div class="field">
+        <label class="lab" for="nameInput">Your name</label>
+        <input type="text" id="nameInput" placeholder="e.g. Avy" maxlength="16" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label class="lab" for="codeInput">Match code</label>
+        <div class="code-row">
+          <input type="text" id="codeInput" maxlength="5" autocomplete="off" spellcheck="false" />
+          <button type="button" class="dice" id="newCode">🎲 New</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lab">Speed <span style="text-transform:none;font-weight:400;letter-spacing:0;">(for a new code)</span></label>
+        <div class="speeds" id="speeds">
+          <label class="radio"><input type="radio" name="speed" value="E" checked /><span>Easy</span></label>
+          <label class="radio"><input type="radio" name="speed" value="M" /><span>Medium</span></label>
+          <label class="radio"><input type="radio" name="speed" value="H" /><span>Hard</span></label>
+        </div>
+      </div>
+
+      <p class="howto">
+        <b>How to race:</b> One of you picks a speed and taps <b>🎲 New</b> to get a code.
+        Share it. The other types that same code in the box. You'll both get the exact
+        same words &mdash; go race on your own computers, then compare scores.
+      </p>
+
+      <p class="err" id="setupErr"></p>
+
+      <button type="button" class="btn-go" id="startBtn">Start race</button>
+    </div>
+  </section>
+
+  <!-- =================== RACE =================== -->
+  <section class="screen" id="race">
+    <div class="statbar">
+      <div class="who"><span id="raceName">You</span><span class="code-tag" id="raceCode">E0000</span></div>
+      <div class="live">
+        <div class="val" id="liveTime">0:00<small>Time</small></div>
+        <div class="val" id="liveWpm">0<small>WPM</small></div>
+      </div>
+    </div>
+
+    <div class="lane" aria-hidden="true">
+      <div class="mid"></div>
+      <div class="finish"></div>
+      <div class="pacer" id="pacer" style="left:14px;"><div class="body"></div></div>
+      <div class="racer" id="racer" style="left:14px;"><div class="body"></div></div>
+    </div>
+
+    <div class="words" id="words"></div>
+
+    <div class="race-foot">
+      <span id="progress">word 1 / 25</span>
+      <span class="hint">just start typing &mdash; the clock's running</span>
+    </div>
+  </section>
+
+  <!-- =================== RESULTS =================== -->
+  <section class="screen" id="results">
+    <div class="result-head">🏁 Finish</div>
+    <div class="scorecard">
+      <div class="rname" id="resName">You</div>
+      <div class="bignum"><span id="wpmVal">0</span><span class="u">WPM</span></div>
+      <div class="subline">
+        <div class="b" id="accVal">0%<small>Accuracy</small></div>
+        <div class="b" id="timeVal">0:00<small>Time</small></div>
+        <div class="b" id="scoreVal">0<small>Score</small></div>
+      </div>
+      <p class="msg" id="resMsg"></p>
+      <p class="tip" id="resTip"></p>
+      <div class="share" id="shareBox"></div>
+      <div class="again">
+        <button type="button" class="primary" id="rematchBtn">Rematch &mdash; same words</button>
+        <button type="button" class="ghost" id="newRaceBtn">New race</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- countdown overlay -->
+<div class="count" id="count"><div class="n" id="countN">3</div></div>
+
+<script>
+/* ============================================================
+   KEY RACE  —  edit your words in the WORDS object right below.
+   Each list just needs plain lowercase words. Add or remove any.
+   ============================================================ */
+const WORDS = {
+  E: [ /* EASY — short, common */
+    "the","and","cat","dog","run","sun","hat","red","big","box","cup","fun",
+    "sit","top","van","yes","map","bed","pen","jam","log","mud","net","owl",
+    "pig","rug","toy","wet","zip","fox","bus","egg","hop","kid","lip","nap",
+    "bat","gum","ink","jet"
+  ],
+  M: [ /* MEDIUM — everyday words */
+    "about","house","water","thing","world","place","right","small","sound",
+    "great","where","every","under","never","start","might","story","paper",
+    "music","green","north","quick","plant","table","chair","happy","dream",
+    "cloud","light","spend","brave","field","train","early","clean","voice",
+    "money","month","group","child"
+  ],
+  H: [ /* HARD — longer + commonly misspelled (good for spelling) */
+    "because","thought","through","beautiful","necessary","definitely","rhythm",
+    "calendar","separate","receive","believe","awkward","february","restaurant",
+    "government","environment","opportunity","immediately","embarrass","occasion",
+    "privilege","recommend","tomorrow","surprise","different","business","weird",
+    "vacuum","conscious","maintenance","noticeable","argument","column","foreign",
+    "guarantee","license","medicine","neighbor","schedule","vehicle"
+  ]
+};
+
+const WORDS_PER_RACE = 25;                 // how many words per race
+const PACE_WPM = { E: 22, M: 38, H: 52 };  // speed of the grey "pace" ghost
+
+/* ---------- tiny seeded random so a code = the same words on both computers ---------- */
+function makeRng(seed){
+  let a = seed >>> 0;
+  return function(){
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function seedFromCode(str){
+  let h = 2166136261;
+  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function pickWords(level, digits){
+  const rng = makeRng(seedFromCode(level + digits));
+  const pool = WORDS[level] || WORDS.E;
+  const out = [];
+  for(let i=0;i<WORDS_PER_RACE;i++){ out.push(pool[Math.floor(rng()*pool.length)]); }
+  return out;
+}
+function fourDigits(){ return String(Math.floor(1000 + Math.random()*9000)); }
+
+/* ---------- element refs ---------- */
+const $ = (id) => document.getElementById(id);
+const screens = { setup: $("setup"), race: $("race"), results: $("results") };
+const nameInput = $("nameInput");
+const codeInput = $("codeInput");
+const setupErr = $("setupErr");
+const wordsEl = $("words");
+const racerEl = $("racer");
+const pacerEl = $("pacer");
+const laneWpm = $("liveWpm");
+const laneTime = $("liveTime");
+const progressEl = $("progress");
+
+/* ---------- state ---------- */
+let state = null;
+let ticker = null;
+
+/* ---------- screen switch ---------- */
+function show(name){
+  for(const k in screens){ screens[k].classList.toggle("active", k === name); }
+}
+
+/* ---------- setup helpers: keep code + speed radios in sync ---------- */
+function currentLevel(){ return document.querySelector('input[name="speed"]:checked').value; }
+function setLevelRadio(level){
+  const r = document.querySelector('input[name="speed"][value="'+level+'"]');
+  if(r) r.checked = true;
+}
+function makeCode(){ codeInput.value = currentLevel() + fourDigits(); }
+
+$("newCode").addEventListener("click", makeCode);
+
+document.querySelectorAll('input[name="speed"]').forEach(r => {
+  r.addEventListener("change", () => {
+    const digits = (codeInput.value.match(/\d{4}/) || [fourDigits()])[0];
+    codeInput.value = currentLevel() + digits;
+  });
+});
+
+codeInput.addEventListener("input", () => {
+  codeInput.value = codeInput.value.toUpperCase();
+  const m = codeInput.value.match(/^([EMH])/);
+  if(m) setLevelRadio(m[1]);
+});
+
+nameInput.addEventListener("keydown", (e) => { if(e.key === "Enter") startBtnClick(); });
+codeInput.addEventListener("keydown", (e) => { if(e.key === "Enter") startBtnClick(); });
+
+/* ---------- start ---------- */
+$("startBtn").addEventListener("click", startBtnClick);
+
+function startBtnClick(){
+  const code = codeInput.value.trim().toUpperCase();
+  if(!/^[EMH]\d{4}$/.test(code)){
+    setupErr.textContent = "That code should look like E4821 — a letter (E, M, or H) then four numbers.";
+    return;
+  }
+  setupErr.textContent = "";
+  const level = code[0];
+  const digits = code.slice(1);
+  const name = nameInput.value.trim() || "You";
+
+  const words = pickWords(level, digits);
+  const target = words.join(" ");
+
+  state = {
+    name, code, level, digits, target,
+    results: new Array(target.length).fill(null),
+    cursor: 0,
+    startTime: 0,
+    finished: false,
+    racing: false
+  };
+
+  $("raceName").textContent = name;
+  $("raceCode").textContent = code;
+  racerEl.style.left = "14px";
+  pacerEl.style.left = "14px";
+  laneWpm.innerHTML = '0<small>WPM</small>';
+  laneTime.innerHTML = '0:00<small>Time</small>';
+  renderWords();
+  updateProgress();
+
+  show("race");
+  runCountdown();
+}
+
+/* ---------- countdown, then go ---------- */
+function runCountdown(){
+  const overlay = $("count");
+  const nEl = $("countN");
+  const steps = ["3","2","1","GO!"];
+  let i = 0;
+  overlay.classList.add("show");
+  nEl.textContent = steps[0];
+  nEl.style.animation = "none"; void nEl.offsetWidth; nEl.style.animation = "";
+
+  const step = () => {
+    i++;
+    if(i < steps.length){
+      nEl.textContent = steps[i];
+      nEl.style.animation = "none"; void nEl.offsetWidth; nEl.style.animation = "";
+      setTimeout(step, 700);
+    } else {
+      overlay.classList.remove("show");
+      beginRace();
+    }
+  };
+  setTimeout(step, 700);
+}
+
+function beginRace(){
+  state.startTime = performance.now();
+  state.racing = true;
+  ticker = setInterval(tick, 150);
+}
+
+/* ---------- typing ---------- */
+document.addEventListener("keydown", (e) => {
+  if(!state || !state.racing || state.finished) return;
+  if(e.ctrlKey || e.metaKey || e.altKey) return;   // let shortcuts through
+
+  if(e.key === "Backspace"){
+    e.preventDefault();
+    if(state.cursor > 0){
+      state.cursor--;
+      state.results[state.cursor] = null;
+      renderWords(); updateProgress();
+    }
+    return;
+  }
+
+  if(e.key.length === 1){                            // a printable char or space
+    e.preventDefault();                              // no scrolling / find-bar mid-race
+    const expected = state.target[state.cursor];
+    state.results[state.cursor] = (e.key === expected);
+    state.cursor++;
+    renderWords(); updateProgress();
+    if(state.cursor >= state.target.length) finish();
+  }
+});
+
+function renderWords(){
+  const t = state.target;
+  let html = "";
+  for(let i=0;i<t.length;i++){
+    let cls = "ch";
+    if(i < state.cursor){ cls += state.results[i] ? " ok" : " bad"; }
+    else if(i === state.cursor){ cls += " cur"; }
+    const c = t[i];
+    const disp = c === " " ? "&nbsp;" : escapeHtml(c);
+    html += '<span class="'+cls+'">'+disp+'</span>';
+  }
+  wordsEl.innerHTML = html;
+}
+function escapeHtml(c){
+  return c.replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
+}
+
+function updateProgress(){
+  // count how many full words are done (spaces passed) + 1
+  let wordsDone = 0;
+  for(let i=0;i<state.cursor;i++){ if(state.target[i] === " ") wordsDone++; }
+  const cur = Math.min(wordsDone + 1, WORDS_PER_RACE);
+  progressEl.textContent = "word " + cur + " / " + WORDS_PER_RACE;
+}
+
+/* ---------- live tick: clock, wpm, racer + pace markers ---------- */
+function tick(){
+  const elapsed = (performance.now() - state.startTime) / 1000;
+  laneTime.innerHTML = fmtTime(elapsed) + '<small>Time</small>';
+
+  let correct = 0;
+  for(let i=0;i<state.cursor;i++){ if(state.results[i] === true) correct++; }
+  const wpm = elapsed > 0.4 ? Math.round((correct/5)/(elapsed/60)) : 0;
+  laneWpm.innerHTML = wpm + '<small>WPM</small>';
+
+  const you = state.cursor / state.target.length;
+  const paceChars = (PACE_WPM[state.level]/60) * 5 * elapsed;
+  const pace = Math.min(1, paceChars / state.target.length);
+  placeMarker(racerEl, you);
+  placeMarker(pacerEl, pace);
+}
+
+function placeMarker(el, frac){
+  // lane inner travel: from 14px to (100% - 40px)
+  el.style.left = "calc(14px + " + (Math.min(1,Math.max(0,frac))) + " * (100% - 54px))";
+}
+
+function fmtTime(sec){
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60);
+  return m + ":" + String(s).padStart(2,"0");
+}
+
+/* ---------- finish + results ---------- */
+function finish(){
+  if(state.finished) return;
+  state.finished = true;
+  state.racing = false;
+  clearInterval(ticker);
+
+  const elapsed = (performance.now() - state.startTime) / 1000;
+  let correct = 0;
+  for(let i=0;i<state.target.length;i++){ if(state.results[i] === true) correct++; }
+  const total = state.target.length;
+  const acc = Math.round((correct/total)*100);
+  const wpm = Math.max(0, Math.round((correct/5)/(elapsed/60)));
+  const score = Math.round(wpm * acc/100);
+
+  $("resName").textContent = state.name;
+  $("wpmVal").textContent = wpm;
+  $("accVal").innerHTML = acc + '%<small>Accuracy</small>';
+  $("timeVal").innerHTML = fmtTime(elapsed) + '<small>Time</small>';
+  $("scoreVal").innerHTML = score + '<small>Score</small>';
+
+  // encouraging, honest message
+  let msg;
+  if(wpm >= 65) msg = "Blazing fast. That's a hard score to beat.";
+  else if(wpm >= 40) msg = "Strong, steady pace. Good race.";
+  else if(wpm >= 20) msg = "Nice run — you're building real speed.";
+  else msg = "Good start. Every race makes your fingers quicker.";
+  $("resMsg").textContent = msg;
+
+  if(acc === 100) $("resTip").textContent = "Perfect accuracy — a totally clean run. 🎯";
+  else if(acc < 88) $("resTip").textContent = "Tip: ease off the speed a little — clean typing scores higher than fast-and-sloppy.";
+  else $("resTip").textContent = "";
+
+  $("shareBox").innerHTML =
+    'Racing Hei? Have them enter code <code>'+state.code+'</code> to type the exact same words, then compare scores.';
+
+  show("results");
+}
+
+/* ---------- again ---------- */
+$("rematchBtn").addEventListener("click", () => {
+  // same code -> same words
+  codeInput.value = state.code;
+  setLevelRadio(state.level);
+  startBtnClick();
+});
+$("newRaceBtn").addEventListener("click", () => {
+  makeCode();               // fresh code, keep the name
+  show("setup");
+  nameInput.focus();
+});
+
+/* ---------- init ---------- */
+makeCode();
+</script>
+</body>
+</html>
