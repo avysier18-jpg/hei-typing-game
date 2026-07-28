@@ -415,8 +415,16 @@
       <div class="field">
         <label class="lab" for="codeInput">Match code</label>
         <div class="code-row">
-          <input type="text" id="codeInput" maxlength="5" autocomplete="off" spellcheck="false" />
+          <input type="text" id="codeInput" maxlength="6" autocomplete="off" spellcheck="false" />
           <button type="button" class="dice" id="newCode">🎲 New</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lab">Language <span style="text-transform:none;font-weight:400;letter-spacing:0;">(for a new code)</span></label>
+        <div class="speeds" id="langs">
+          <label class="radio"><input type="radio" name="lang" value="E" checked /><span>English</span></label>
+          <label class="radio"><input type="radio" name="lang" value="S" /><span>Español</span></label>
         </div>
       </div>
 
@@ -444,7 +452,7 @@
   <!-- =================== RACE =================== -->
   <section class="screen" id="race">
     <div class="statbar">
-      <div class="who"><span id="raceName">You</span><span class="code-tag" id="raceCode">E0000</span><button type="button" class="copy-btn" id="copyRaceCode">Copy code</button></div>
+      <div class="who"><span id="raceName">You</span><span class="code-tag" id="raceCode">EE0000</span><button type="button" class="copy-btn" id="copyRaceCode">Copy code</button></div>
       <div class="live">
         <div class="val" id="liveTime">0:00<small>Time</small></div>
         <div class="val" id="liveWpm">0<small>WPM</small></div>
@@ -500,27 +508,16 @@
    Each list just needs plain lowercase words. Add or remove any.
    ============================================================ */
 const WORDS = {
-  E: [ /* EASY — short, common */
-    "the","and","cat","dog","run","sun","hat","red","big","box","cup","fun",
-    "sit","top","van","yes","map","bed","pen","jam","log","mud","net","owl",
-    "pig","rug","toy","wet","zip","fox","bus","egg","hop","kid","lip","nap",
-    "bat","gum","ink","jet"
-  ],
-  M: [ /* MEDIUM — everyday words */
-    "about","house","water","thing","world","place","right","small","sound",
-    "great","where","every","under","never","start","might","story","paper",
-    "music","green","north","quick","plant","table","chair","happy","dream",
-    "cloud","light","spend","brave","field","train","early","clean","voice",
-    "money","month","group","child"
-  ],
-  H: [ /* HARD — longer + commonly misspelled (good for spelling) */
-    "because","thought","through","beautiful","necessary","definitely","rhythm",
-    "calendar","separate","receive","believe","awkward","february","restaurant",
-    "government","environment","opportunity","immediately","embarrass","occasion",
-    "privilege","recommend","tomorrow","surprise","different","business","weird",
-    "vacuum","conscious","maintenance","noticeable","argument","column","foreign",
-    "guarantee","license","medicine","neighbor","schedule","vehicle"
-  ]
+  E: { // ENGLISH
+    E: ["iron","forge","anvil","path","road","clear","build","steel","honor","rise","fire","truth","self","myth","power"],
+    M: ["hammer","temper","justice","rights","remedy","liberty","verdict","statute","shadow","symbol","sacred","ritual","balance","wisdom","vision","source","verify","pattern","follow","system","clarity"],
+    H: ["evidence","testimony","standing","precedent","petition","transparency","archetype","threshold","transform","question"]
+  },
+  S: { // ESPAÑOL — all spelled with no accents / no ñ on purpose
+    E: ["ley","luz","paz","vida","alma","caso","juez","clara","honor","fuego","causa","regla","valor","poder","forja","acero","corte","norma","deber","sabio"],
+    M: ["verdad","fuerza","camino","sombra","ritual","cambio","fuente","origen","prueba","hierro","yunque","remedio","sistema","derecho","testigo","sendero","sagrado"],
+    H: ["justicia","libertad","martillo","construir","equilibrio","verificar","claridad","pregunta"]
+  }
 };
 
 const WORDS_PER_RACE = 25;                 // how many words per race
@@ -541,9 +538,10 @@ function seedFromCode(str){
   for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
   return h >>> 0;
 }
-function pickWords(level, digits){
-  const rng = makeRng(seedFromCode(level + digits));
-  const pool = WORDS[level] || WORDS.E;
+function pickWords(language, level, digits){
+  const rng = makeRng(seedFromCode(language + level + digits));
+  const langPool = WORDS[language] || WORDS.E;
+  const pool = langPool[level] || langPool.E;
   const out = [];
   for(let i=0;i<WORDS_PER_RACE;i++){ out.push(pool[Math.floor(rng()*pool.length)]); }
   return out;
@@ -572,27 +570,33 @@ function show(name){
   for(const k in screens){ screens[k].classList.toggle("active", k === name); }
 }
 
-/* ---------- setup helpers: keep code + speed radios in sync ---------- */
+/* ---------- setup helpers: keep code + language/speed radios in sync ---------- */
+function currentLanguage(){ return document.querySelector('input[name="lang"]:checked').value; }
 function currentLevel(){ return document.querySelector('input[name="speed"]:checked').value; }
+function setLanguageRadio(lang){
+  const r = document.querySelector('input[name="lang"][value="'+lang+'"]');
+  if(r) r.checked = true;
+}
 function setLevelRadio(level){
   const r = document.querySelector('input[name="speed"][value="'+level+'"]');
   if(r) r.checked = true;
 }
-function makeCode(){ codeInput.value = currentLevel() + fourDigits(); }
+function makeCode(){ codeInput.value = currentLanguage() + currentLevel() + fourDigits(); }
 
 $("newCode").addEventListener("click", makeCode);
 
-document.querySelectorAll('input[name="speed"]').forEach(r => {
+document.querySelectorAll('input[name="lang"], input[name="speed"]').forEach(r => {
   r.addEventListener("change", () => {
+    // keep the existing 4 digits; just rebuild the two leading letters from the toggles
     const digits = (codeInput.value.match(/\d{4}/) || [fourDigits()])[0];
-    codeInput.value = currentLevel() + digits;
+    codeInput.value = currentLanguage() + currentLevel() + digits;
   });
 });
 
 codeInput.addEventListener("input", () => {
   codeInput.value = codeInput.value.toUpperCase();
-  const m = codeInput.value.match(/^([EMH])/);
-  if(m) setLevelRadio(m[1]);
+  const m = codeInput.value.match(/^([ES])([EMH])/);
+  if(m){ setLanguageRadio(m[1]); setLevelRadio(m[2]); }
 });
 
 nameInput.addEventListener("keydown", (e) => { if(e.key === "Enter") startBtnClick(); });
@@ -641,20 +645,21 @@ $("startBtn").addEventListener("click", startBtnClick);
 
 function startBtnClick(){
   const code = codeInput.value.trim().toUpperCase();
-  if(!/^[EMH]\d{4}$/.test(code)){
-    setupErr.textContent = "That code should look like E4821 — a letter (E, M, or H) then four numbers.";
+  if(!/^[ES][EMH]\d{4}$/.test(code)){
+    setupErr.textContent = "Code should look like EM4821 — language (E or S), speed (E, M, or H), then four numbers.";
     return;
   }
   setupErr.textContent = "";
-  const level = code[0];
-  const digits = code.slice(1);
+  const language = code[0];
+  const level = code[1];
+  const digits = code.slice(2);
   const name = nameInput.value.trim() || "You";
 
-  const words = pickWords(level, digits);
+  const words = pickWords(language, level, digits);
   const target = words.join(" ");
 
   state = {
-    name, code, level, digits, target,
+    name, code, language, level, digits, target,
     results: new Array(target.length).fill(null),
     cursor: 0,
     startTime: 0,
@@ -840,6 +845,7 @@ function finish(){
 $("rematchBtn").addEventListener("click", () => {
   // same code -> same words
   codeInput.value = state.code;
+  setLanguageRadio(state.language);
   setLevelRadio(state.level);
   startBtnClick();
 });
