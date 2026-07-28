@@ -355,6 +355,11 @@
     letter-spacing: 1.3px; color: var(--muted); text-transform: uppercase; margin-top: 5px;
   }
   #scoreVal{ color: var(--gold); }
+  #bestVal{ color: var(--flash); }
+  .best-msg{
+    color: var(--gold); font-weight: 700; font-size: 16px;
+    margin: 16px 0 0; min-height: 20px;
+  }
   .msg{
     margin: 24px auto 0; max-width: 460px;
     font-size: 16px; line-height: 1.5; color: var(--ink);
@@ -471,7 +476,9 @@
         <div class="b" id="accVal">0%<small>Accuracy</small></div>
         <div class="b" id="timeVal">0:00<small>Time</small></div>
         <div class="b" id="scoreVal">0<small>Score</small></div>
+        <div class="b" id="bestVal">0<small>Best</small></div>
       </div>
+      <p class="best-msg" id="bestMsg"></p>
       <p class="msg" id="resMsg"></p>
       <p class="tip" id="resTip"></p>
       <div class="share" id="shareBox"></div>
@@ -590,6 +597,18 @@ codeInput.addEventListener("input", () => {
 
 nameInput.addEventListener("keydown", (e) => { if(e.key === "Enter") startBtnClick(); });
 codeInput.addEventListener("keydown", (e) => { if(e.key === "Enter") startBtnClick(); });
+
+/* ---------- best score, remembered on this browser ---------- */
+const BEST_KEY = "keyrace_best";
+function getBest(){
+  try {
+    const v = localStorage.getItem(BEST_KEY);
+    return v === null ? 0 : (parseInt(v, 10) || 0);
+  } catch(e){ return 0; }   // storage blocked -> act as if no best yet
+}
+function setBest(n){
+  try { localStorage.setItem(BEST_KEY, String(n)); } catch(e){ /* storage blocked -> ignore */ }
+}
 
 /* ---------- copy-the-code helpers ---------- */
 function copyText(txt){
@@ -784,6 +803,14 @@ function finish(){
   $("accVal").innerHTML = acc + '%<small>Accuracy</small>';
   $("timeVal").innerHTML = fmtTime(elapsed) + '<small>Time</small>';
   $("scoreVal").innerHTML = score + '<small>Score</small>';
+
+  // best score, remembered on this browser
+  const prevBest = getBest();
+  const isNewBest = score > prevBest;
+  if(isNewBest) setBest(score);
+  const best = Math.max(prevBest, score);
+  $("bestVal").innerHTML = best + '<small>Best</small>';
+  $("bestMsg").textContent = isNewBest ? "New personal best! 🏆" : "";
 
   // encouraging, honest message
   let msg;
