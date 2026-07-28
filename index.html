@@ -206,7 +206,7 @@
   }
   .copy-btn:hover{ border-color: var(--flash); }
   .copy-btn:active{ transform: translateY(1px); }
-  .copy-btn.copied{
+  .copy-btn.copied, .dice.copied{
     background: var(--boost); border-color: var(--boost); color: var(--track);
   }
   .live{ display: flex; gap: 22px; }
@@ -417,6 +417,7 @@
         <div class="code-row">
           <input type="text" id="codeInput" maxlength="6" autocomplete="off" spellcheck="false" />
           <button type="button" class="dice" id="newCode">🎲 New</button>
+          <button type="button" class="dice" id="copySetupCode">Copy</button>
         </div>
       </div>
 
@@ -632,8 +633,12 @@ function flashCopied(btn){
   btn._copyTimer = setTimeout(() => {
     btn.textContent = btn.dataset.label;
     btn.classList.remove("copied");
-  }, 1200);
+  }, 1500);
 }
+$("copySetupCode").addEventListener("click", () => {
+  copyText(codeInput.value.trim().toUpperCase());
+  flashCopied($("copySetupCode"));
+});
 $("copyRaceCode").addEventListener("click", () => {
   const code = state ? state.code : $("raceCode").textContent;
   copyText(code);
