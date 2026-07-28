@@ -390,6 +390,151 @@
   .again .ghost:hover{ border-color: var(--boost); }
   .again button:active{ transform: translateY(1px); }
 
+  /* ---- results header checkered flag (replaces 🏁) ---- */
+  .rh-flag{
+    width: 34px; height: 31px; display: inline-block;
+    vertical-align: middle; margin-right: 8px;
+    transform: skewX(7deg);   /* counter the header's skew so the flag reads straight */
+  }
+  .rh-flag svg{ width: 100%; height: 100%; display: block; }
+
+  /* ============================================================
+     TYPIST CARD — 100% original collectible-style card, all CSS/SVG.
+     Not based on any existing product's frame, names, or art.
+     ============================================================ */
+  .tcard-wrap{ display: flex; justify-content: center; margin: 28px 0 6px; }
+
+  .tcard{
+    position: relative;
+    width: min(300px, 82vw);
+    aspect-ratio: 300 / 440;
+    border-radius: 18px;
+    padding: 9px;                 /* this padding is the metallic frame */
+    overflow: hidden;
+    font-family: var(--font-ui);
+    /* per-tier variables (bronze defaults) */
+    --tc-f1: #d1953f; --tc-f2: #6e4318; --tc-glow: transparent;
+    background: linear-gradient(135deg,
+      var(--tc-f1), var(--tc-f2) 38%, var(--tc-f1) 52%, var(--tc-f2) 70%, var(--tc-f1));
+    box-shadow:
+      0 12px 30px rgba(0,0,0,.5),
+      0 0 0 1px rgba(0,0,0,.4),
+      0 0 24px var(--tc-glow);
+  }
+  .tcard.tier-silver{ --tc-f1:#e8edf5; --tc-f2:#8b93a3; --tc-glow: rgba(205,215,235,.32); }
+  .tcard.tier-gold{   --tc-f1:#ffdd80; --tc-f2:#b9822a; --tc-glow: rgba(255,200,75,.45); }
+  .tcard.tier-molten{ --tc-f1:#ff9a44; --tc-f2:#b81e2c; --tc-glow: rgba(255,88,36,.6); }
+
+  .tcard-inner{
+    position: relative; z-index: 1;
+    height: 100%;
+    display: flex; flex-direction: column;
+    border-radius: 11px;
+    padding: 10px;
+    background: linear-gradient(180deg, #1b1642, #110d2c);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), inset 0 2px 12px rgba(0,0,0,.65);
+  }
+
+  /* title bar */
+  .tcard-titlebar{
+    flex: 0 0 auto;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; margin-bottom: 8px;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,0));
+  }
+  .tcard-name{
+    flex: 1 1 auto; min-width: 0;
+    font-family: var(--font-display);
+    font-size: clamp(17px, 5.6vw, 22px);
+    letter-spacing: .6px; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--ink);
+  }
+  .tcard-badge{ flex: 0 0 auto; width: 30px; height: 30px; }
+  .tcard-badge svg{ width: 100%; height: 100%; display: block; }
+
+  /* art window */
+  .tcard-art{
+    position: relative;
+    flex: 1 1 auto; min-height: 0;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: inset 0 0 20px rgba(0,0,0,.75);
+  }
+  .tcard-art svg{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .spark{ animation: tcTwinkle 2.6s ease-in-out infinite; }
+  .spark.s2{ animation-delay: .35s; }
+  .spark.s3{ animation-delay: .7s; }
+  .spark.s4{ animation-delay: 1.05s; }
+  .spark.s5{ animation-delay: 1.4s; }
+  .spark.s6{ animation-delay: 1.8s; }
+  .spark.s7{ animation-delay: 2.2s; }
+  @keyframes tcTwinkle{ 0%,100%{ opacity:.2; } 50%{ opacity:1; } }
+
+  /* stats row */
+  .tcard-stats{ flex: 0 0 auto; display: flex; gap: 8px; margin-top: 8px; }
+  .tcstat{
+    flex: 1; display: flex; align-items: baseline; justify-content: space-between;
+    padding: 5px 10px;
+    border: 1px solid rgba(255,255,255,.10); border-radius: 8px;
+    background: rgba(255,255,255,.05);
+  }
+  .tclabel{ font-weight: 800; font-size: 11px; letter-spacing: 1.6px; color: var(--muted); }
+  .tcnum{ font-family: var(--font-display); font-size: clamp(20px, 6vw, 26px); line-height: 1; }
+  .tcstat.atk .tcnum{ color: var(--flash); }
+  .tcstat.def .tcnum{ color: var(--boost); }
+
+  /* star rank */
+  .tcard-stars{ flex: 0 0 auto; display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
+  .tcstar{ width: 20px; height: 20px; display: block; }
+
+  /* flavor box */
+  .tcard-flavor{
+    flex: 0 0 auto; margin-top: 8px;
+    padding: 7px 10px; text-align: center;
+    border: 1px solid rgba(255,255,255,.08); border-radius: 8px;
+    background: rgba(0,0,0,.3);
+    font-size: clamp(11px, 3.3vw, 12.5px); font-style: italic; line-height: 1.35;
+    color: var(--ink);
+  }
+
+  /* footer */
+  .tcard-foot{
+    flex: 0 0 auto; margin-top: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; letter-spacing: .3px; color: var(--muted);
+  }
+  .tctier{
+    font-weight: 800; letter-spacing: 2px; font-size: 10.5px;
+    padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--tc-f1); color: var(--tc-f1);
+  }
+
+  /* NEW BEST corner ribbon */
+  .tcard-ribbon{
+    display: none;
+    position: absolute; top: 15px; left: -36px; z-index: 7;
+    transform: rotate(-45deg);
+    padding: 4px 42px;
+    background: linear-gradient(180deg, var(--boost), #14a99a);
+    color: #062b27; font-weight: 800; font-size: 10px; letter-spacing: 1.6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.55);
+  }
+  .tcard.is-newbest .tcard-ribbon{ display: block; }
+
+  /* molten-tier animated shimmer */
+  .tcard.tier-molten::after{
+    content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    border-radius: 18px;
+    background: linear-gradient(120deg, transparent 32%, rgba(255,255,255,.26) 48%, transparent 64%);
+    background-size: 250% 100%;
+    mix-blend-mode: screen;
+    animation: tcShimmer 2.8s linear infinite;
+  }
+  @keyframes tcShimmer{ from{ background-position: 130% 0; } to{ background-position: -130% 0; } }
+
   @media (prefers-reduced-motion: reduce){
     *{ animation: none !important; transition: none !important; }
   }
@@ -477,7 +622,7 @@
 
   <!-- =================== RESULTS =================== -->
   <section class="screen" id="results">
-    <div class="result-head">🏁 Finish</div>
+    <div class="result-head"><span class="rh-flag" aria-hidden="true"><svg viewBox="0 0 44 40"><defs><pattern id="rhCheck" width="10" height="10" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#f4f1ff"/><rect width="5" height="5" fill="#2a2350"/><rect x="5" y="5" width="5" height="5" fill="#2a2350"/></pattern></defs><rect x="8" y="5" width="2.6" height="31" rx="1.3" fill="#b7b0e0"/><rect x="11.5" y="6.5" width="25" height="17" rx="2" fill="url(#rhCheck)" stroke="rgba(0,0,0,.35)" stroke-width="1"/></svg></span>Finish</div>
     <div class="scorecard">
       <div class="rname" id="resName">You</div>
       <div class="bignum"><span id="wpmVal">0</span><span class="u">WPM</span></div>
@@ -491,6 +636,87 @@
       <p class="msg" id="resMsg"></p>
       <p class="tip" id="resTip"></p>
       <div class="share" id="shareBox"></div>
+
+      <!-- Typist Card: original collectible-style card, drawn entirely in CSS/SVG -->
+      <div class="tcard-wrap">
+        <div class="tcard tier-bronze" id="typistCard">
+          <div class="tcard-ribbon" id="tcRibbon">NEW BEST</div>
+          <div class="tcard-inner">
+
+            <div class="tcard-titlebar">
+              <span class="tcard-name" id="tcName">You</span>
+              <span class="tcard-badge" aria-hidden="true">
+                <svg viewBox="0 0 40 40">
+                  <defs>
+                    <linearGradient id="tcIron" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#ffe6b0"/>
+                      <stop offset=".5" stop-color="#d19341"/>
+                      <stop offset="1" stop-color="#7a4a1c"/>
+                    </linearGradient>
+                  </defs>
+                  <circle cx="20" cy="20" r="18.5" fill="#14102e" stroke="url(#tcIron)" stroke-width="2"/>
+                  <!-- struck-iron spark -->
+                  <path d="M28 8.5 L29.5 12.2 L33.2 10.8 L30.4 13.8 L33.4 15.3 L29.7 15.5 L30.6 19.2 L28 16.5 L25.4 19.2 L26.3 15.5 L22.6 15.3 L25.6 13.8 L23.8 10.9 L27.5 12.2 Z" fill="#ffcf7a" opacity=".92"/>
+                  <!-- anvil -->
+                  <polygon points="10,22 29,22 34,24.5 29,27 10,27" fill="url(#tcIron)"/>
+                  <polygon points="10,22 29,22 27,23.5 12,23.5" fill="rgba(255,255,255,.28)"/>
+                  <polygon points="16,27 23,27 21.5,30.5 17.5,30.5" fill="url(#tcIron)"/>
+                  <polygon points="12,30.5 27,30.5 27,33 12,33" fill="url(#tcIron)"/>
+                </svg>
+              </span>
+            </div>
+
+            <div class="tcard-art">
+              <svg viewBox="0 0 300 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <defs>
+                  <radialGradient id="tcCore" cx="50%" cy="78%" r="62%">
+                    <stop offset="0%" stop-color="#fff4cf"/>
+                    <stop offset="20%" stop-color="#ffb443"/>
+                    <stop offset="52%" stop-color="#e24a1b"/>
+                    <stop offset="100%" stop-color="#e24a1b" stop-opacity="0"/>
+                  </radialGradient>
+                  <linearGradient id="tcShard" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#514c8c"/>
+                    <stop offset="100%" stop-color="#171233"/>
+                  </linearGradient>
+                </defs>
+                <rect width="300" height="170" fill="#0c0920"/>
+                <ellipse cx="150" cy="150" rx="150" ry="86" fill="url(#tcCore)"/>
+                <polygon points="0,170 78,170 34,108" fill="url(#tcShard)"/>
+                <polygon points="230,170 300,170 300,96 250,120" fill="url(#tcShard)"/>
+                <polygon points="120,170 190,170 165,116" fill="#120e2c"/>
+                <g transform="rotate(-13 190 128)">
+                  <rect x="150" y="122" width="86" height="11" rx="3" fill="#ffcf7a"/>
+                  <rect x="150" y="122" width="86" height="4" rx="2" fill="#fff0c4" opacity=".85"/>
+                </g>
+                <circle class="spark s1" cx="150" cy="66" r="2.4" fill="#ffe1a0"/>
+                <circle class="spark s2" cx="120" cy="84" r="1.7" fill="#ffcf7a"/>
+                <circle class="spark s3" cx="182" cy="78" r="2"   fill="#ffe1a0"/>
+                <circle class="spark s4" cx="96"  cy="60" r="1.5" fill="#ffbf6a"/>
+                <circle class="spark s5" cx="210" cy="58" r="1.7" fill="#ffd98a"/>
+                <circle class="spark s6" cx="166" cy="48" r="1.4" fill="#fff0c4"/>
+                <circle class="spark s7" cx="134" cy="52" r="1.5" fill="#ffcf7a"/>
+              </svg>
+            </div>
+
+            <div class="tcard-stats">
+              <div class="tcstat atk"><span class="tclabel">ATK</span><span class="tcnum" id="tcAtk">0</span></div>
+              <div class="tcstat def"><span class="tclabel">DEF</span><span class="tcnum" id="tcDef">0%</span></div>
+            </div>
+
+            <div class="tcard-stars" id="tcStars"></div>
+
+            <div class="tcard-flavor" id="tcFlavor"></div>
+
+            <div class="tcard-foot">
+              <span class="tctier" id="tcTier">BRONZE</span>
+              <span id="tcFoot">Score 0 · Best 0</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
       <div class="again">
         <button type="button" class="primary" id="rematchBtn">Rematch &mdash; same words</button>
         <button type="button" class="ghost" id="newRaceBtn">New race</button>
@@ -793,6 +1019,50 @@ function fmtTime(sec){
   return m + ":" + String(s).padStart(2,"0");
 }
 
+/* ---------- typist card ---------- */
+function buildStars(n){
+  let html = "";
+  for(let i=1;i<=5;i++){
+    const on = i <= n;
+    html += '<svg class="tcstar" viewBox="0 0 24 24" aria-hidden="true">'
+      + '<path d="M12 2.2 L14.9 8.6 L21.8 9.2 L16.6 13.8 L18.2 20.6 L12 16.9 L5.8 20.6 L7.4 13.8 L2.2 9.2 L9.1 8.6 Z" '
+      + 'fill="' + (on ? 'var(--gold)' : 'rgba(255,255,255,.10)') + '" '
+      + 'stroke="' + (on ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.18)') + '" stroke-width="1"/></svg>';
+  }
+  return html;
+}
+
+// Populate the Typist Card from a finished race's stats.
+function renderTypistCard(s){
+  // rarity tier by score
+  let tier, tierLabel, flavor;
+  if(s.score >= 55){ tier = "molten"; tierLabel = "MOLTEN"; flavor = "Forged in fire — struck clean, tempered true."; }
+  else if(s.score >= 40){ tier = "gold"; tierLabel = "GOLD"; flavor = "Steady hands, sharp mind. The anvil holds."; }
+  else if(s.score >= 25){ tier = "silver"; tierLabel = "SILVER"; flavor = "The blade takes shape with every strike."; }
+  else { tier = "bronze"; tierLabel = "BRONZE"; flavor = "Every master was once raw iron. Begin."; }
+
+  // star rank by score (own thresholds)
+  let stars;
+  if(s.score >= 55) stars = 5;
+  else if(s.score >= 40) stars = 4;
+  else if(s.score >= 28) stars = 3;
+  else if(s.score >= 16) stars = 2;
+  else stars = 1;
+
+  const card = $("typistCard");
+  card.classList.remove("tier-molten","tier-gold","tier-silver","tier-bronze");
+  card.classList.add("tier-" + tier);
+  card.classList.toggle("is-newbest", !!s.isNewBest);
+
+  $("tcName").textContent = s.name;
+  $("tcAtk").textContent = s.wpm;
+  $("tcDef").textContent = s.acc + "%";
+  $("tcStars").innerHTML = buildStars(stars);
+  $("tcFlavor").textContent = flavor;
+  $("tcTier").textContent = tierLabel;
+  $("tcFoot").textContent = "Score " + s.score + " · Best " + s.best;
+}
+
 /* ---------- finish + results ---------- */
 function finish(){
   if(state.finished) return;
@@ -820,7 +1090,10 @@ function finish(){
   if(isNewBest) setBest(score);
   const best = Math.max(prevBest, score);
   $("bestVal").innerHTML = best + '<small>Best</small>';
-  $("bestMsg").textContent = isNewBest ? "New personal best! 🏆" : "";
+  $("bestMsg").textContent = isNewBest ? "New personal best!" : "";
+
+  // populate the collectible-style typist card
+  renderTypistCard({ name: state.name, wpm: wpm, acc: acc, score: score, best: best, isNewBest: isNewBest });
 
   // encouraging, honest message
   let msg;
@@ -830,7 +1103,7 @@ function finish(){
   else msg = "Good start. Every race makes your fingers quicker.";
   $("resMsg").textContent = msg;
 
-  if(acc === 100) $("resTip").textContent = "Perfect accuracy — a totally clean run. 🎯";
+  if(acc === 100) $("resTip").textContent = "Perfect accuracy — a totally clean run.";
   else if(acc < 88) $("resTip").textContent = "Tip: ease off the speed a little — clean typing scores higher than fast-and-sloppy.";
   else $("resTip").textContent = "";
 
